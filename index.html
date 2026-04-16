@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#060614">
+    <title>FLUX — Renk Akış Bulmaca</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- ═══ MAIN MENU ═══ -->
+    <div id="screen-menu" class="screen active">
+        <div class="menu-bg"></div>
+        <div class="menu-content">
+            <div class="logo-container">
+                <h1 class="logo">FLUX</h1>
+                <p class="tagline">Renk Akış Bulmaca</p>
+            </div>
+            <div class="menu-buttons">
+                <button class="btn-primary" id="btn-play">Oyna</button>
+                <button class="btn-secondary" id="btn-levels">Level Seç</button>
+                <button class="btn-secondary" id="btn-color-guide">Renk Rehberi</button>
+            </div>
+            <div class="menu-footer">
+                <div class="stat-box">
+                    <span class="stat-icon">★</span>
+                    <span id="menu-total-stars">0</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-icon">●</span>
+                    <span id="menu-coins">100</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ LEVEL SELECT ═══ -->
+    <div id="screen-levels" class="screen">
+        <div class="screen-header">
+            <button class="btn-back" id="btn-back-levels">←</button>
+            <h2>Level Seç</h2>
+            <div></div>
+        </div>
+        <div id="level-grid" class="level-grid"></div>
+    </div>
+
+    <!-- ═══ COLOR GUIDE ═══ -->
+    <div id="screen-colors" class="screen">
+        <div class="screen-header">
+            <button class="btn-back" id="btn-back-colors">←</button>
+            <h2>Renk Rehberi</h2>
+            <div></div>
+        </div>
+        <div class="color-guide-content">
+            <div class="guide-section">
+                <h3>Temel Renkler</h3>
+                <div class="color-row"><span class="color-dot" style="background:#FF4D6A"></span> Kırmızı</div>
+                <div class="color-row"><span class="color-dot" style="background:#4DA6FF"></span> Mavi</div>
+                <div class="color-row"><span class="color-dot" style="background:#FFD94D"></span> Sarı</div>
+            </div>
+            <div class="guide-section">
+                <h3>Renk Birleşimleri</h3>
+                <div class="mix-row">
+                    <span class="color-dot" style="background:#FF4D6A"></span>
+                    <span class="mix-plus">+</span>
+                    <span class="color-dot" style="background:#4DA6FF"></span>
+                    <span class="mix-equals">=</span>
+                    <span class="color-dot" style="background:#B44DFF"></span>
+                    <span class="mix-name">Mor</span>
+                </div>
+                <div class="mix-row">
+                    <span class="color-dot" style="background:#FF4D6A"></span>
+                    <span class="mix-plus">+</span>
+                    <span class="color-dot" style="background:#FFD94D"></span>
+                    <span class="mix-equals">=</span>
+                    <span class="color-dot" style="background:#FF8C42"></span>
+                    <span class="mix-name">Turuncu</span>
+                </div>
+                <div class="mix-row">
+                    <span class="color-dot" style="background:#4DA6FF"></span>
+                    <span class="mix-plus">+</span>
+                    <span class="color-dot" style="background:#FFD94D"></span>
+                    <span class="mix-equals">=</span>
+                    <span class="color-dot" style="background:#4DFF91"></span>
+                    <span class="mix-name">Yeşil</span>
+                </div>
+            </div>
+            <div class="guide-section">
+                <h3>Mekanik Katmanları</h3>
+                <div class="mechanic-row"><span class="lvl-badge">1-30</span> Temel Akış — sürükle, rengi yay</div>
+                <div class="mechanic-row"><span class="lvl-badge">31-60</span> Duvarlar — bazı hücreler geçilmez</div>
+                <div class="mechanic-row"><span class="lvl-badge">61-105</span> Buz — renk kayarak yayılır</div>
+                <div class="mechanic-row"><span class="lvl-badge">106-165</span> Köprüler — akışlar üst üste geçebilir</div>
+                <div class="mechanic-row"><span class="lvl-badge">166-240</span> Kilitler — belirli renkle açılır</div>
+                <div class="mechanic-row"><span class="lvl-badge">241-315</span> Bombalar — süre dolunca patlar!</div>
+                <div class="mechanic-row"><span class="lvl-badge">316-390</span> Borular — akışı yönlendirir</div>
+                <div class="mechanic-row"><span class="lvl-badge">391+</span> Renk Karışımı — iki rengi birleştir</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ GAME SCREEN ═══ -->
+    <div id="screen-game" class="screen">
+        <header id="hud">
+            <div id="hud-left">
+                <button class="hud-btn" id="btn-pause">☰</button>
+                <span id="level-label">Level 1</span>
+                <span id="diff-badge" style="font-size:0.7rem;font-weight:700;margin-left:6px"></span>
+            </div>
+            <div id="hud-center">
+                <div class="lives-container" id="lives-container"></div>
+            </div>
+            <div id="hud-right">
+                <div class="coin-display">
+                    <span class="coin-icon">●</span>
+                    <span id="hud-coins">100</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="move-bar">
+            <span id="moves-text">Hamle: <strong><span id="moves-count">0</span></strong> / <span id="moves-limit">10</span></span>
+            <div class="stars-inline">
+                <span class="star-sm" id="star-0">★</span>
+                <span class="star-sm" id="star-1">★</span>
+                <span class="star-sm" id="star-2">★</span>
+            </div>
+        </div>
+
+        <canvas id="game-canvas"></canvas>
+
+        <div id="game-toolbar">
+            <button class="tool-btn" id="btn-undo">
+                <span class="tool-icon">↩</span>
+                <span class="tool-label">Geri Al</span>
+            </button>
+            <button class="tool-btn" id="btn-hint">
+                <span class="tool-icon">💡</span>
+                <span class="tool-label">İpucu <small>(50●)</small></span>
+            </button>
+            <button class="tool-btn" id="btn-restart">
+                <span class="tool-icon">↻</span>
+                <span class="tool-label">Sıfırla</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══ PAUSE OVERLAY ═══ -->
+    <div id="overlay-pause" class="overlay hidden">
+        <div class="overlay-box">
+            <h2>Duraklat</h2>
+            <button class="btn-primary" id="btn-resume">Devam Et</button>
+            <button class="btn-secondary" id="btn-quit">Ana Menü</button>
+        </div>
+    </div>
+
+    <!-- ═══ LEVEL COMPLETE OVERLAY ═══ -->
+    <div id="overlay-complete" class="overlay hidden">
+        <div class="overlay-box">
+            <h2 id="complete-title">Level Tamamlandı!</h2>
+            <div id="complete-stars" class="complete-stars"></div>
+            <p id="complete-msg" class="complete-msg"></p>
+            <div class="complete-stats">
+                <span>Hamle: <strong id="complete-moves">0</strong></span>
+                <span>Puan: <strong id="complete-score">0</strong></span>
+            </div>
+            <button class="btn-primary" id="btn-next-level">Sonraki Level →</button>
+            <button class="btn-secondary btn-sm" id="btn-replay">Tekrar Oyna</button>
+        </div>
+    </div>
+
+    <!-- ═══ FAIL OVERLAY ═══ -->
+    <div id="overlay-fail" class="overlay hidden">
+        <div class="overlay-box">
+            <h2>Hamle Bitti!</h2>
+            <p class="fail-msg">Hamle limitini aştın.</p>
+            <button class="btn-primary" id="btn-extra-moves">+3 Hamle (Reklam İzle)</button>
+            <button class="btn-secondary" id="btn-fail-restart">Yeniden Dene</button>
+            <button class="btn-secondary btn-sm" id="btn-fail-menu">Ana Menü</button>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

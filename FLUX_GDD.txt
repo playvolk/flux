@@ -1,0 +1,393 @@
+FLUX
+Renk Akış Bulmaca Oyunu
+Oyun Tasarım Dokümanı  ·  v0.1  ·  2026
+
+"Kaotik bir yüzeyi tek sürüklemeyle arındır."
+
+
+
+1. Oyun Konsepti
+
+1.1 Özet
+FLUX; renkli nokta kümeleriyle dolu geometrik bir yüzeyde oyuncunun parmağını sürükleyerek renk akışları oluşturduğu, her renci kendi hedef bölgesine yönlendirdiği bir mobil bulmaca oyunudur. Magic Sort ve Hexa Sort'un yarattığı sort-puzzle kategorisinde mekanik ve görsel olarak yeni bir standart kurmayı hedefler.
+
+1.2 Tek Cümle Pitch
+"Parmağını bir renk noktasına bas, sürükle — renk akar, yüzey arınır."
+
+1.3 Temel Farklılaşma
+Piyasadaki tüm sort puzzle oyunları "nesneyi al, bir yere bırak" mekanik döngüsü üzerine kuruludur. Nesne değişir (su, top, vida, altıgen) ama sistem aynı kalır.
+
+FLUX'ta oyuncu nesneyi taşımaz — akış yönü belirler. Renk, belirlenen yönde ilerler ve aynı renge çarptığında durur. Bu mekanik üç temel his yaratır:
+	•	Kontrol hissi — sürükleme anlık ve sezgisel
+	•	Tatmin — renk birleşince görsel patlama ve temizlenme
+	•	Strateji — hamle limiti, az hamlede bitirme baskısı
+
+1.4 Hedef Kitle
+Segment
+Yaş
+Özellik
+Motivasyon
+Core Casual
+18–45
+Günde 15–30 dk oyun
+Stres atma, zihinsel tatmin
+Light Gamer
+25–50
+Bekleme sürelerinde oynar
+Hızlı oturum, basit kural
+Puzzle Sever
+20–55
+Zorlanmayı sever
+Hamle optimizasyonu, yıldız avı
+Geniş Aile
+10–65
+Her yaştan erişilebilir
+Renk tabanlı, dil bariyeri yok
+
+
+
+2. Oyun Mekaniği
+
+2.1 Temel Kurallar
+	•	Oyuncu parmağını bir renk noktasına basar ve sürüklemeye başlar.
+	•	Parmağın geçtiği her hücreye o rengin akış oku atanır.
+	•	Aynı renkten başka bir noktaya ulaşıldığında sürükleme otomatik biter.
+	•	Akış okları atandıktan sonra renkler otomatik akmaya başlar.
+	•	Bir hedef bölgenin tamamı doğru renkle dolduğunda bölge "arınır" (görsel efekt + ses).
+	•	Tüm bölgeler arındığında level tamamlanır.
+
+2.2 Hamle Sistemi
+Her sürükleme hamlesi 1 hamle sayılır. Her levelde belirli bir hamle limiti bulunur. Oyuncu ne kadar az hamlede tamamlarsa o kadar yüksek puan ve yıldız kazanır.
+
+Performans
+Kriter
+Ödül
+3 Yıldız
+Limitin %60 veya altında
+Maksimum puan + bonus coin
+2 Yıldız
+Limitin %60–85 arası
+Standart puan
+1 Yıldız
+Limite kadar (dahil)
+Minimum puan, level geçilir
+Başarısız
+Limit aşılır
+Level yeniden başlar
+
+2.3 Mekanik Katmanları
+Oyun ilerledikçe yeni kurallar eklenir — ancak hiçbir kural ilk 3 saniyede öğrenilemeyen karmaşıklıkta değildir:
+
+Katman
+Level Aralığı
+Açıklama
+Temel Akış
+1–50
+Sürükle, rengi doğru bölgeye götür
+Duvarlar
+51–150
+Bazı hücreler geçilmez, akış yön değiştirmek zorunda
+Bloke Noktalar
+151–400
+Kilitli hücreler; belirli renk geçince açılır
+Renk Karışımı
+401–800
+Kırmızı + Sarı = Turuncu; yeni renk üretmek gerekir
+Çift Yön
+801–1200
+Tek sürükleme iki yönde eş zamanlı akış başlatır
+Master Mod
+1201–2000
+Tüm mekanikler aktif, minimal hamle limiti
+
+2.4 Kontrol Şeması
+Eylem
+Kontrol
+Akış başlat
+Renk noktasına bas + sürükle
+Akışı bitir
+Aynı renkten noktaya ulaş veya parmağı kaldır
+Geri al
+Çift tıkla veya "Geri" butonu
+Level sıfırla
+Sağ üst köşe butonu
+İpucu kullan
+Sol üst köşe — coin veya reklam izle
+
+
+
+3. Level Tasarımı ve Örnekleri
+
+3.1 Level Üretim Algoritması
+FLUX'un en güçlü yanı sonsuz çözülebilir level üretebilmesidir. Algoritma şu adımları izler:
+
+	•	Temiz grid oluştur: her hedef bölge tek renk içeriyor.
+	•	Çözüm hamlelerini belirle: kaç sürüklemeyle temizlenir?
+	•	Hamleleri tersine uygula: başlangıç kaotik pozisyonunu oluştur.
+	•	Zorluk skoru hesapla: renk sayısı × grid boyutu × ters hamle sayısı.
+	•	Doğrulama: algoritma levelin çözülebilir olduğunu garanti eder.
+
+Bu yöntemle 2.000 level üretimi algoritmik olarak dakikalar içinde tamamlanabilir. Her level matematiksel olarak çözülebilirdir.
+
+3.2 Level Progression Tablosu
+Aralık
+Grid
+Renk Sayısı
+Hamle Limiti
+Yeni Mekanik
+1–50
+4×4 – 5×5
+2
+Bol (rahat)
+Sadece temel akış
+51–150
+5×5
+3
+Orta
+Duvarlar eklenir
+151–400
+6×6
+3–4
+Kısıtlı
+Bloke noktalar
+401–800
+6×6 – 7×7
+4
+Sıkı
+Renk karışımı
+801–1200
+7×7
+4–5
+Çok sıkı
+Çift yön akış
+1201–2000
+7×7 – 8×8
+5
+Expert
+Tüm mekanikler
+
+3.3 Level Örnekleri (Görsel)
+Aşağıdaki görseller FLUX'un ilk 3 levelinin başlangıç durumunu göstermektedir. Renkli noktalar kaotik başlangıç pozisyonunu, şeffaf renkli alanlar ise hedef bölgeleri temsil etmektedir.
+
+
+Level 1 — 5×5 grid, 2 renk (Kırmızı / Mavi). Başlangıç: Karışık. Hedef: Sol 3 sütun Mavi, Sağ 2 sütun Kırmızı.
+
+Level 2 — 6×6 grid, 3 renk (Kırmızı / Sarı / Mavi). Hedef: Üst 2 satır Kırmızı, Orta 2 satır Sarı, Alt 2 satır Mavi.
+
+Level 3 — 7×7 grid, 4 renk. Hedef: 4 köşe bölge. Orta şerit serbest / geçiş bölgesi.
+
+
+
+4. Görsel ve Ses Tasarımı
+
+4.1 Görsel Kimlik
+FLUX koyu arka plan üzerinde parlak, fluid renklerin parladığı bir estetik benimser. Referans noktaları:
+	•	Monument Valley — geometrik minimalizm, perspektif oyunları
+	•	Hexa Sort — ASMR tatmin, renk patlamaları, parlak 3D
+	•	Fluid simülasyonlar — renkler gerçekten akıyor hissi
+
+Element
+Tasarım Kararı
+Arka Plan
+Koyu lacivert / siyah (#0A0A1A)
+Renk Noktaları
+Parlak, neon-soft tonlar — glow efektli
+Akış Animasyonu
+Fluid, gerçek fizik simülasyonu hissi
+Arınma Efekti
+Cam şeffaflığına geçiş + parçacık patlaması
+Grid
+İnce çizgiler, neredeyse görünmez
+UI
+Minimalist, font: tek ağırlıklı sans-serif
+
+4.2 Ses Tasarımı
+Ses, ASMR tatmininin kritik parçasıdır. Hedef: her seste "doğru yaptım" hissi.
+	•	Sürükleme: yumuşak, sürekli bir akış sesi
+	•	Renk birleşimi: kısa, tatlı bir "ding" veya su sesi
+	•	Bölge arınması: daha büyük, tatmin edici bir "whoosh + sparkle"
+	•	Level tamamlama: 3-4 notluk kısa melodi
+	•	Arka plan müzik: lo-fi, ambiyant, dikkat dağıtmayan
+
+
+
+5. Monetizasyon Stratejisi
+
+5.1 Model: Hibrit Monetizasyon
+Piyasa araştırması net bir sonuç ortaya koyuyor: Sort puzzle kategorisinde saf reklam modeli eskiyor. Hexa Sort ve Magic Sort'un IAP geliri 2024'te ikiye katlandı. FLUX doğrudan hibrit modelle başlar.
+
+5.2 Gelir Katmanları
+Katman
+Mekanik
+Fiyat
+Psikoloji
+Fail Offer
++3 Hamle Hakkı (limit aşınca)
+$1.99 / coin
+Hayal kırıklığı anında teklif
+Rewarded Ad
+İpucu için reklam izle
+Ücretsiz
+Gönüllü, baskısız
+Starter Pack
+İlk 24 saatte özel teklif
+$2.99
+Yüksek dönüşüm penceresi
+Coin Pack
+Coin satın al
+$0.99–$9.99
+Küçük başla, alışkanlık oluştur
+Ad Remove
+Reklamları kaldır
+$4.99 / tek seferlik
+Premium his isteyenler için
+Battle Pass
+Sezonluk içerik + özel temalar
+$4.99 / ay
+Uzun vadeli gelir
+
+5.3 Reklam Stratejisi
+Magic Sort'tan alınan kritik ders: Reklamlar Level 22'ye kadar gösterilmez. Bu, oyuncunun oyuna bağlanmasını sağlar ve premium his yaratır. FLUX aynı stratejiyi izler.
+
+	•	Level 1–20: Sıfır reklam
+	•	Level 21+: Level arası banner (atlanabilir, 5 sn)
+	•	İpucu sistemi: Rewarded video (gönüllü)
+	•	Hedef: Günlük gelirin %40'ı IAP, %60'ı reklam
+
+
+
+6. Büyüme ve Yayın Stratejisi
+
+6.1 Aşamalı Yayın Planı
+Aşama
+Hedef
+Platform
+KPI
+Aşama 1: Web Prototype
+Mekanik validation
+CrazyGames / Poki
+D1 Retention > %40
+Aşama 2: Soft Launch
+Monetization testi
+iOS TR / AUS
+D7 Retention > %20
+Aşama 3: Global
+Ölçekleme
+iOS + Android Global
+Günlük gelir > $10K
+Aşama 4: Publisher / Investor
+Büyük ölçek UA
+Tüm kanallar
+Günlük gelir > $50K
+
+6.2 Organik Büyüme Taktikleri
+Publisher olmadan büyüme için en güçlü kanal: görsel viral içerik.
+	•	TikTok / Reels: 8–10 saniyelik gameplay clip'leri — akış + arınma anının görsel tatmini
+	•	YouTube Shorts: "Bunu çözebilir misin?" formatı
+	•	Web-first yaklaşım: CrazyGames / Poki organik trafik sağlar, maliyet sıfır
+	•	ASO optimizasyonu: "sort puzzle", "color flow", "satisfying puzzle" keyword'leri
+
+6.3 Publisher Eşiği
+İyi retention ve monetization rakamlarına ulaşınca publisher zaten gelir. Hedef metrikler:
+Metrik
+Hedef Değer
+D1 Retention
+>%45
+D7 Retention
+>%20
+D30 Retention
+>%10
+ARPU (Day 30)
+>$0.50
+Session Uzunluğu
+>8 dakika
+
+
+
+7. Rekabet Analizi
+
+Oyun
+Mekanik
+Güçlü Yön
+Zayıf Yön
+FLUX Farkı
+Water Sort
+Dök/doldur
+Viral başlangıç
+Çok klonlandı, eskidi
+Sürükle-akış yenilik
+Magic Sort
+Dök/doldur (gelişmiş)
+Yüksek prodüksiyon
+Aynı mekanik, pahalı UA
+Farklı core loop
+Hexa Sort
+Altıgen yerleştir
+ASMR tatmin, D30 >%15
+Öğrenme eğrisi yüksek
+Daha sezgisel kontrol
+Ball Sort
+Topları taşı
+Büyük kullanıcı kitlesi
+Reklam ağır, düşük kalite
+Görsel üstünlük
+Screw Sort
+Vida sök/tak
+Yeni nesne twist'i
+3D, daha yavaş oturum
+Daha hızlı tatmin
+FLUX
+Sürükle-akış
+Yeni mekanik, görsel
+Henüz test edilmedi
+—
+
+
+
+8. İsim ve Marka
+
+8.1 "FLUX" İsim Analizi
+Kriter
+Değerlendirme
+App Store varlığı
+Dominant sort puzzle olarak yok. "Flux Flow" isimli ufak indie oyun var — farklı tür.
+Türkçe / Global telaffuz
+Her dilde kolay: "flaks". Evrensel.
+İngilizce anlam
+"Sürekli değişim, akış hali" — oyunun özüyle birebir örtüşüyor.
+Marka gücü
+Kısa, güçlü, akılda kalıcı. 4 harf avantajı.
+Trademark riski
+Oyun kategorisinde muhtemelen temiz — resmi araştırma gerekli.
+Alternatif isimler
+"Flow", "Drift", "Pour", "Pur" — hepsi daha jenerik.
+
+8.2 Önerilen Sonraki Adım
+	•	USPTO / EUIPO'da "FLUX" + "game" kategorisi trademark araştırması
+	•	App Store'da "Flux" araması — mevcut oyunları belgele
+	•	flux.gg veya playflux.com domain kontrolü
+
+
+
+9. Özet ve Sonraki Adımlar
+
+9.1 FLUX Neden Şimdi?
+Sort puzzle kategorisi 2024'te IAP gelirini ikiye katladı ve hâlâ büyüyor. Ama kimse henüz "sürükle-akış" mekaniğini uygulamadı. Pencere açık.
+
+	•	Pazar büyüyor: Sort puzzle IAP geliri 2024'te $279 milyon
+	•	Mekanik boşluğu var: Sürükle-akış sistemi piyasada yok
+	•	Görsel viral potansiyeli: Akış animasyonu TikTok için biçilmiş kaftan
+	•	Düşük başlangıç maliyeti: Web prototype ile sıfır UA bütçesiyle test edilebilir
+
+9.2 Öncelikli Eylem Listesi
+	•	Sürükleme mekaniğiyle güncellenmiş HTML prototype geliştir
+	•	"Flux" trademark araştırmasını yap
+	•	Level algoritmasını kodla — 50 level üret ve test et
+	•	CrazyGames / Poki'de web versiyonu yayınla
+	•	TikTok için 10 gameplay clip çek — organik test
+	•	D1/D7 retention ve session length verilerini topla
+	•	Rakamlara göre soft launch veya publisher görüşmesi
+
+
+
+FLUX  ·  Oyun Tasarım Dokümanı  ·  v0.1  ·  2026
